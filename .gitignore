@@ -1,0 +1,7 @@
+Obj/
+List/
+Exe/
+*.swp
+tags
+file.txt
+cscope.*
