@@ -53,7 +53,7 @@
 //#include "OnBoard.h"
 #include "OSAL.h"
 #include "OSAL_Timers.h"
-#include "hal_mcu.h"
+#include "port.h"
 
 /*********************************************************************
  * MACROS

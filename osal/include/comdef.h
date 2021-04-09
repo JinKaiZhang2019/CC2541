@@ -59,8 +59,10 @@ extern "C"
  */
 
 /* HAL */
-#include "hal_types.h"
+//#include "hal_types.h"
+#include "port.h"
 #include "hal_defs.h"
+
 
 /*********************************************************************
  * Lint Keywords

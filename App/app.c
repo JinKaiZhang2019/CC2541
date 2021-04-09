@@ -53,9 +53,10 @@
 #include "OSAL.h"
 #include "OSAL_PwrMgr.h"
 
-#include "simpleBLEPeripheral.h"
+#include "app.h"
+#include <stdio.h>
 
-uint8 simpleBLEPeripheral_TaskID = 0;
+uint8 App_TaskID = 0;
 
 /*********************************************************************
  * MACROS
@@ -127,13 +128,14 @@ uint8 simpleBLEPeripheral_TaskID = 0;
  *
  * @return  none
  */
-void SimpleBLEPeripheral_Init( uint8 task_id )
+void App_Init( uint8 task_id )
 {
 
-    simpleBLEPeripheral_TaskID = task_id;
+    App_TaskID = task_id;
 
 	// Setup a delayed profile startup
-	osal_set_event( simpleBLEPeripheral_TaskID, SBP_START_DEVICE_EVT );
+	osal_set_event( App_TaskID, SBP_START_DEVICE_EVT );
+    osal_set_event(App_TaskID,SBP_PERIODIC_EVT);
 
 }
 
@@ -150,7 +152,7 @@ void SimpleBLEPeripheral_Init( uint8 task_id )
  *
  * @return  events not processed
  */
-uint16 SimpleBLEPeripheral_ProcessEvent( uint8 task_id, uint16 events )
+uint16 App_ProcessEvent( uint8 task_id, uint16 events )
 {
 
 	VOID task_id; // OSAL required parameter that isn't used in this function
@@ -163,13 +165,16 @@ uint16 SimpleBLEPeripheral_ProcessEvent( uint8 task_id, uint16 events )
 
 	if ( events & SBP_START_DEVICE_EVT )
 	{
-
+        printf("hello\n");
+        osal_start_timerEx(App_TaskID,SBP_START_DEVICE_EVT,1000);
 		return ( events ^ SBP_START_DEVICE_EVT );
 	}
 
 	if ( events & SBP_PERIODIC_EVT )
 	{
 
+        printf("event2\n");
+        osal_start_timerEx(App_TaskID,SBP_PERIODIC_EVT,2000);
 		return (events ^ SBP_PERIODIC_EVT);
 	}
 

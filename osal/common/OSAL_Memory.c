@@ -58,7 +58,7 @@
 #include "OSAL.h"
 #include "OSAL_Memory.h"
 //#include "OnBoard.h"
-#include "hal_mcu.h"
+//#include "hal_mcu.h"
 #include "port.h"
 
 /* ------------------------------------------------------------------------------------------------

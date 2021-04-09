@@ -8,7 +8,7 @@
  Target Device: CC2540, CC2541
 
  ******************************************************************************
- 
+
  Copyright (c) 2008-2016, Texas Instruments Incorporated
  All rights reserved.
 
@@ -53,6 +53,7 @@
 //#include "OnBoard.h"
 #include "OSAL.h"
 #include "OSAL_Clock.h"
+#include "tick.h"
 
 /*********************************************************************
  * MACROS
@@ -127,48 +128,58 @@ static void osalClockUpdate( uint16 elapsedMSec );
  */
 void osalTimeUpdate( void )
 {
-  uint16 tmp;
-  uint16 ticks625us;
-  uint16 elapsedMSec = 0;
+    static uint32_t tickBak = 0;
+    uint32_t tmp = Tick_GetTick();
+    uint32_t diff = tmp - tickBak;
+    tickBak = tmp;
 
-  // Get the free-running count of 625us timer ticks
-  
+#if 0
+    uint16 tmp = 0;
+    uint16 ticks625us;
+    uint16 elapsedMSec = 0;
+
+    // Get the free-running count of 625us timer ticks
+
 //  tmp = ll_McuPrecisionCount();
 #warning "opt"
 
-  if ( tmp != previousLLTimerTick )
-  {
-    // Calculate the elapsed ticks of the free-running timer.
-    ticks625us = tmp - previousLLTimerTick;
-
-    // Store the LL Timer tick count for the next time through this function.
-    previousLLTimerTick = tmp;
-
-    /* It is necessary to loop to convert the usecs to msecs in increments so as
-     * not to overflow the 16-bit variables.
-     */
-    while ( ticks625us > MAXCALCTICKS )
+    if ( tmp != previousLLTimerTick )
     {
-      ticks625us -= MAXCALCTICKS;
-      elapsedMSec += MAXCALCTICKS * 5 / 8;
-      remUsTicks += MAXCALCTICKS * 5 % 8;
+        // Calculate the elapsed ticks of the free-running timer.
+        ticks625us = tmp - previousLLTimerTick;
+
+        // Store the LL Timer tick count for the next time through this function.
+        previousLLTimerTick = tmp;
+
+        /* It is necessary to loop to convert the usecs to msecs in increments so as
+         * not to overflow the 16-bit variables.
+         */
+        while ( ticks625us > MAXCALCTICKS )
+        {
+            ticks625us -= MAXCALCTICKS;
+            elapsedMSec += MAXCALCTICKS * 5 / 8;
+            remUsTicks += MAXCALCTICKS * 5 % 8;
+        }
+
+        // update converted number with remaining ticks from loop and the
+        // accumulated remainder from loop
+        tmp = (ticks625us * 5) + remUsTicks;
+
+        // Convert the 625 us ticks into milliseconds and a remainder
+        elapsedMSec += tmp / 8;
+        remUsTicks = tmp % 8;
+
+        // Update OSAL Clock and Timers
+        if ( elapsedMSec )
+        {
+            osalClockUpdate( elapsedMSec );
+            osalTimerUpdate( elapsedMSec );
+        }
     }
+#endif
 
-    // update converted number with remaining ticks from loop and the
-    // accumulated remainder from loop
-    tmp = (ticks625us * 5) + remUsTicks;
-
-    // Convert the 625 us ticks into milliseconds and a remainder
-    elapsedMSec += tmp / 8;
-    remUsTicks = tmp % 8;
-
-    // Update OSAL Clock and Timers
-    if ( elapsedMSec )
-    {
-      osalClockUpdate( elapsedMSec );
-      osalTimerUpdate( elapsedMSec );
-    }
-  }
+    osalClockUpdate( diff );
+    osalTimerUpdate( diff );
 }
 
 /*********************************************************************
@@ -182,15 +193,15 @@ void osalTimeUpdate( void )
  */
 static void osalClockUpdate( uint16 elapsedMSec )
 {
-  // Add elapsed milliseconds to the saved millisecond portion of time
-  timeMSec += elapsedMSec;
+    // Add elapsed milliseconds to the saved millisecond portion of time
+    timeMSec += elapsedMSec;
 
-  // Roll up milliseconds to the number of seconds
-  if ( timeMSec >= 1000 )
-  {
-    OSAL_timeSeconds += timeMSec / 1000;
-    timeMSec = timeMSec % 1000;
-  }
+    // Roll up milliseconds to the number of seconds
+    if ( timeMSec >= 1000 )
+    {
+        OSAL_timeSeconds += timeMSec / 1000;
+        timeMSec = timeMSec % 1000;
+    }
 }
 
 /*********************************************************************
@@ -206,7 +217,7 @@ static void osalClockUpdate( uint16 elapsedMSec )
  */
 void osal_setClock( UTCTime newTime )
 {
-  OSAL_timeSeconds = newTime;
+    OSAL_timeSeconds = newTime;
 }
 
 /*********************************************************************
@@ -223,7 +234,7 @@ void osal_setClock( UTCTime newTime )
  */
 UTCTime osal_getClock( void )
 {
-  return ( OSAL_timeSeconds );
+    return ( OSAL_timeSeconds );
 }
 
 /*********************************************************************
@@ -238,35 +249,35 @@ UTCTime osal_getClock( void )
  *
  * @return  none
  */
-void osal_ConvertUTCTime( UTCTimeStruct *tm, UTCTime secTime )
+void osal_ConvertUTCTime( UTCTimeStruct* tm, UTCTime secTime )
 {
-  // calculate the time less than a day - hours, minutes, seconds
-  {
-    uint32 day = secTime % DAY;
-    tm->seconds = day % 60UL;
-    tm->minutes = (day % 3600UL) / 60UL;
-    tm->hour = day / 3600UL;
-  }
-
-  // Fill in the calendar - day, month, year
-  {
-    uint16 numDays = secTime / DAY;
-    tm->year = BEGYEAR;
-    while ( numDays >= YearLength( tm->year ) )
+    // calculate the time less than a day - hours, minutes, seconds
     {
-      numDays -= YearLength( tm->year );
-      tm->year++;
+        uint32 day = secTime % DAY;
+        tm->seconds = day % 60UL;
+        tm->minutes = (day % 3600UL) / 60UL;
+        tm->hour = day / 3600UL;
     }
 
-    tm->month = 0;
-    while ( numDays >= monthLength( IsLeapYear( tm->year ), tm->month ) )
+    // Fill in the calendar - day, month, year
     {
-      numDays -= monthLength( IsLeapYear( tm->year ), tm->month );
-      tm->month++;
-    }
+        uint16 numDays = secTime / DAY;
+        tm->year = BEGYEAR;
+        while ( numDays >= YearLength( tm->year ) )
+        {
+            numDays -= YearLength( tm->year );
+            tm->year++;
+        }
 
-    tm->day = numDays;
-  }
+        tm->month = 0;
+        while ( numDays >= monthLength( IsLeapYear( tm->year ), tm->month ) )
+        {
+            numDays -= monthLength( IsLeapYear( tm->year ), tm->month );
+            tm->month++;
+        }
+
+        tm->day = numDays;
+    }
 }
 
 /*********************************************************************
@@ -280,26 +291,26 @@ void osal_ConvertUTCTime( UTCTimeStruct *tm, UTCTime secTime )
  */
 static uint8 monthLength( uint8 lpyr, uint8 mon )
 {
-  uint8 days = 31;
+    uint8 days = 31;
 
-  if ( mon == 1 ) // feb
-  {
-    days = ( 28 + lpyr );
-  }
-  else
-  {
-    if ( mon > 6 ) // aug-dec
+    if ( mon == 1 ) // feb
     {
-      mon--;
+        days = ( 28 + lpyr );
+    }
+    else
+    {
+        if ( mon > 6 ) // aug-dec
+        {
+            mon--;
+        }
+
+        if ( mon & 1 )
+        {
+            days = 30;
+        }
     }
 
-    if ( mon & 1 )
-    {
-      days = 30;
-    }
-  }
-
-  return ( days );
+    return ( days );
 }
 
 /*********************************************************************
@@ -311,39 +322,39 @@ static uint8 monthLength( uint8 lpyr, uint8 mon )
  *
  * @return  number of seconds since 00:00:00 on 01/01/2000 (UTC)
  */
-UTCTime osal_ConvertUTCSecs( UTCTimeStruct *tm )
+UTCTime osal_ConvertUTCSecs( UTCTimeStruct* tm )
 {
-  uint32 seconds;
+    uint32 seconds;
 
-  /* Seconds for the partial day */
-  seconds = (((tm->hour * 60UL) + tm->minutes) * 60UL) + tm->seconds;
+    /* Seconds for the partial day */
+    seconds = (((tm->hour * 60UL) + tm->minutes) * 60UL) + tm->seconds;
 
-  /* Account for previous complete days */
-  {
-    /* Start with complete days in current month */
-    uint16 days = tm->day;
-
-    /* Next, complete months in current year */
+    /* Account for previous complete days */
     {
-      int8 month = tm->month;
-      while ( --month >= 0 )
-      {
-        days += monthLength( IsLeapYear( tm->year ), month );
-      }
+        /* Start with complete days in current month */
+        uint16 days = tm->day;
+
+        /* Next, complete months in current year */
+        {
+            int8 month = tm->month;
+            while ( --month >= 0 )
+            {
+                days += monthLength( IsLeapYear( tm->year ), month );
+            }
+        }
+
+        /* Next, complete years before current year */
+        {
+            uint16 year = tm->year;
+            while ( --year >= BEGYEAR )
+            {
+                days += YearLength( year );
+            }
+        }
+
+        /* Add total seconds before partial day */
+        seconds += (days * DAY);
     }
 
-    /* Next, complete years before current year */
-    {
-      uint16 year = tm->year;
-      while ( --year >= BEGYEAR )
-      {
-        days += YearLength( year );
-      }
-    }
-
-    /* Add total seconds before partial day */
-    seconds += (days * DAY);
-  }
-
-  return ( seconds );
+    return ( seconds );
 }

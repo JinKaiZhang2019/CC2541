@@ -6,13 +6,14 @@ CC = gcc
 DOC = doc
 BUILD_DIR = build
 C_SOURCES  = \
-./App/SimpleBLEPeripheral_Main.c \
-./App/OSAL_SimpleBLEPeripheral.c \
-./App/simpleBLEPeripheral.c \
+./main.c \
+./App/app.c \
+./OSAL_TaskInit.c \
 ./osal/common/OSAL.c \
 ./osal/common/OSAL_Memory.c \
 ./osal/common/OSAL_ClockBLE.c \
 ./osal/common/OSAL_Timers.c \
+./port/tick.c \
 
 
 TARGET = test
@@ -27,7 +28,7 @@ OPT = -O2
 
 # C defines
 C_DEFS =  \
-#-D \
+-D_POSIX_C_SOURCE=199309L\
 
 # C includes
 C_INCLUDES =  \
@@ -47,9 +48,11 @@ endif
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)"
 
 # libraries
-LIBS = 
+LIBS = \
+-lpthread \
+
 LIBDIR = 
-LDFLAGS = 
+LDFLAGS =  $(LIBDIR) $(LIBS)
 
 #######################################
 # list of objects

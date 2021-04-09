@@ -1,9 +1,9 @@
 /******************************************************************************
 
- @file  simpleBLEPeripheral.h
+ @file  SimpleBLEPeripheral_Main.c
 
- @brief This file contains the Simple BLE Peripheral sample application
-        definitions and prototypes.
+ @brief This file contains the main and callback functions for the
+        Simple BLE Peripheral sample application.
 
  Group: WCS, BTS
  Target Device: CC2540, CC2541
@@ -46,50 +46,61 @@
  Release Date: 2016-06-09 06:57:10
  *****************************************************************************/
 
-#ifndef SIMPLEBLEPERIPHERAL_H
-#define SIMPLEBLEPERIPHERAL_H
+/**************************************************************************************************
+ *                                           Includes
+ **************************************************************************************************/
+/* Hal Drivers */
+//#include "hal_types.h"
+//#include "hal_key.h"
+//#include "hal_timer.h"
+//#include "hal_drivers.h"
+//#include "hal_led.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+/* OSAL */
+#include "OSAL.h"
+#include "OSAL_Tasks.h"
+#include "tick.h"
+//#include "OSAL_PwrMgr.h"
+//#include "osal_snv.h"
+//#include "OnBoard.h"
 
-/*********************************************************************
- * INCLUDES
- */
-
-/*********************************************************************
- * CONSTANTS
- */
-
-
-// Simple BLE Peripheral Task Events
-#define SBP_START_DEVICE_EVT                              0x0001
-#define SBP_PERIODIC_EVT                                  0x0002
-
-/*********************************************************************
- * MACROS
- */
-
-/*********************************************************************
+/**************************************************************************************************
  * FUNCTIONS
+ **************************************************************************************************/
+
+/**************************************************************************************************
+ * @fn          main
+ *
+ * @brief       Start of application.
+ *
+ * @param       none
+ *
+ * @return      none
+ **************************************************************************************************
  */
+int main(void)
+{
 
-/*
- * Task Initialization for the BLE Application
- */
-extern void SimpleBLEPeripheral_Init( uint8 task_id );
+    Tick_Init();
+    /* Initialize the operating system */
+    osal_init_system();
 
-/*
- * Task Event Processor for the BLE Application
- */
-extern uint16 SimpleBLEPeripheral_ProcessEvent( uint8 task_id, uint16 events );
+    /* Enable interrupts */
+//  HAL_ENABLE_INTERRUPTS();
 
-/*********************************************************************
-*********************************************************************/
+    // Final board initialization
+// InitBoard( OB_READY );
 
-#ifdef __cplusplus
+    /* Start OSAL */
+    osal_start_system(); // No Return from here
+
+    return 0;
 }
-#endif
 
-#endif /* SIMPLEBLEPERIPHERAL_H */
+/**************************************************************************************************
+                                           CALL-BACKS
+**************************************************************************************************/
+
+
+/*************************************************************************************************
+**************************************************************************************************/

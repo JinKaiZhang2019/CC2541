@@ -1,8 +1,9 @@
 /******************************************************************************
 
- @file  OSAL_SimpleBLEPeripheral.c
+ @file  simpleBLEPeripheral.h
 
- @brief This file contains function that allows user setup tasks
+ @brief This file contains the Simple BLE Peripheral sample application
+        definitions and prototypes.
 
  Group: WCS, BTS
  Target Device: CC2540, CC2541
@@ -45,55 +46,50 @@
  Release Date: 2016-06-09 06:57:10
  *****************************************************************************/
 
-/**************************************************************************************************
- *                                            INCLUDES
- **************************************************************************************************/
-#include "hal_types.h"
-#include "OSAL.h"
-#include "OSAL_Tasks.h"
+#ifndef _APP_H_
+#define _APP_H_
 
-/* HAL */
-#include "hal_drivers.h"
-
-/* Application */
-#include "simpleBLEPeripheral.h"
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 /*********************************************************************
- * GLOBAL VARIABLES
+ * INCLUDES
  */
 
-// The order in this table must be identical to the task initialization calls below in osalInitTask.
-const pTaskEventHandlerFn tasksArr[] =
-{
-    SimpleBLEPeripheral_ProcessEvent                                  // task 11
-};
+/*********************************************************************
+ * CONSTANTS
+ */
 
-const uint8 tasksCnt = sizeof( tasksArr ) / sizeof( tasksArr[0] );
-uint16 *tasksEvents;
+
+// Simple BLE Peripheral Task Events
+#define SBP_START_DEVICE_EVT                              0x0001
+#define SBP_PERIODIC_EVT                                  0x0002
+
+/*********************************************************************
+ * MACROS
+ */
 
 /*********************************************************************
  * FUNCTIONS
- *********************************************************************/
-
-/*********************************************************************
- * @fn      osalInitTasks
- *
- * @brief   This function invokes the initialization function for each task.
- *
- * @param   void
- *
- * @return  none
  */
-void osalInitTasks( void )
-{
-    uint8 taskID = 0;
 
-    tasksEvents = (uint16 *)osal_mem_alloc( sizeof( uint16 ) * tasksCnt);
-    osal_memset( tasksEvents, 0, (sizeof( uint16 ) * tasksCnt));
+/*
+ * Task Initialization for the BLE Application
+ */
+extern void App_Init( uint8 task_id );
 
-    /* Application */
-    SimpleBLEPeripheral_Init( taskID );
-}
+/*
+ * Task Event Processor for the BLE Application
+ */
+extern uint16 App_ProcessEvent( uint8 task_id, uint16 events );
 
 /*********************************************************************
 *********************************************************************/
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* SIMPLEBLEPERIPHERAL_H */
