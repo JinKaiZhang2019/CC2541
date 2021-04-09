@@ -26,5 +26,6 @@
 #define HAL_ASSERT_DECLARATION(declaration)     declaration
 #define halAssertHandler() while(1);
 typedef uint8_t halIntState_t  ;
+#define MAXMEMHEAP  100
 
 #endif   /* ----- #ifndef __PORT_H__ ----- */

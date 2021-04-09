@@ -50,10 +50,10 @@
  */
 
 #include "comdef.h"
-#include "OnBoard.h"
+//#include "OnBoard.h"
 #include "OSAL.h"
 #include "OSAL_Timers.h"
-#include "hal_timer.h"
+#include "hal_mcu.h"
 
 /*********************************************************************
  * MACROS

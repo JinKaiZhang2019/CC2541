@@ -33,12 +33,12 @@ C_DEFS =  \
 C_INCLUDES =  \
 -I. \
 -I./Projects/ble/SimpleBLEPeripheral/Source \
--I./Components/hal/include \
--I./Components/osal/include  \
--I./Components/hal/target/CC2540EB \
 -I./Projects/ble/common/cc2540 \
+-I./Components/hal/target/CC2540EB \
+-I./Components/osal/include  \
 -I./Components/osal/include \
 -I./port \
+#-I./Components/hal/include \
 
 
 CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall 

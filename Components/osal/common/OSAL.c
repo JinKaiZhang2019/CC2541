@@ -56,14 +56,15 @@
 #include <stdlib.h>
 
 #include "comdef.h"
-#include "hal_board.h"
+//#include "hal_board.h"
+#include "hal_mcu.h"
 #include "OSAL.h"
 #include "OSAL_Tasks.h"
 #include "OSAL_Memory.h"
 #include "OSAL_PwrMgr.h"
 #include "OSAL_Clock.h"
 
-#include "OnBoard.h"
+//#include "OnBoard.h"
 
 /* HAL */
 #include "hal_drivers.h"
