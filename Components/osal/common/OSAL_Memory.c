@@ -59,7 +59,7 @@
 #include "OSAL_Memory.h"
 #include "OnBoard.h"
 #include "hal_mcu.h"
-#include "hal_assert.h"
+#include "port.h"
 
 /* ------------------------------------------------------------------------------------------------
  *                                           Constants

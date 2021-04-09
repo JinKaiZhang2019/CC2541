@@ -51,7 +51,7 @@
 
 #include "hal_mcu.h"
 #include "hal_sleep.h"
-#include "osal.h"
+#include "OSAL.h"
 
 /*********************************************************************
  */
@@ -185,7 +185,7 @@ extern void OnBoard_KeyCallback ( uint8 keys, uint8 state );
 /*
  * Perform a soft reset - jump to 0x0
  */
-extern __near_func void Onboard_soft_reset( void );
+//extern __near_func void Onboard_soft_reset( void );
 
 
 /*********************************************************************

@@ -53,6 +53,7 @@
  */
 
 #include <string.h>
+#include <stdlib.h>
 
 #include "comdef.h"
 #include "hal_board.h"
@@ -395,7 +396,8 @@ unsigned char * _ltoa(unsigned long l, unsigned char *buf, unsigned char radix)
 #if defined (__TI_COMPILER_VERSION) || defined (__TI_COMPILER_VERSION__)
   return ( (unsigned char*)ltoa( l, (char *)buf ) );
 #elif defined( __GNUC__ )
-  return ( (char*)ltoa( l, buf, radix ) );
+  //return ( (char*)ltoa( l, buf, radix ) );
+#warning "this is"
 #else
   unsigned char tmp1[10] = "", tmp2[10] = "", tmp3[10] = "";
   unsigned short num1, num2, num3;
@@ -466,7 +468,8 @@ unsigned char * _ltoa(unsigned long l, unsigned char *buf, unsigned char radix)
  */
 uint16 osal_rand( void )
 {
-  return ( Onboard_rand() );
+//  return ( Onboard_rand() );
+#warning "this need to optimize"
 }
 
 /*********************************************************************
@@ -1344,7 +1347,7 @@ uint8 osal_init_system( void )
   osalTimerInit();
 
   // Initialize the Power Management System
-  osal_pwrmgr_init();
+//  osal_pwrmgr_init();
 
 #ifdef USE_ICALL
   /* Prepare memory space for service enrollment */
@@ -1572,7 +1575,7 @@ void osal_run_system( void )
   osalTimeUpdate();
 #endif
 
-  Hal_ProcessPoll();
+//  Hal_ProcessPoll();
 #endif /* USE_ICALL */
 
 #ifdef USE_ICALL

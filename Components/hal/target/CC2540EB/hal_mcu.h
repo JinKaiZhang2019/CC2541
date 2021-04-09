@@ -106,7 +106,9 @@
 #define HAL_ISR_FUNCTION(f,v)           HAL_ISR_FUNC_PROTOTYPE(f,v); HAL_ISR_FUNC_DECLARATION(f,v)
 
 /* ------------------ Unrecognized Compiler ------------------ */
-#else
+#elif defined __GNUC__
+
+#else 
 #error "ERROR: Unknown compiler."
 #endif
 
@@ -115,14 +117,14 @@
  *                                        Interrupt Macros
  * ------------------------------------------------------------------------------------------------
  */
-#define HAL_ENABLE_INTERRUPTS()         st( EA = 1; )
-#define HAL_DISABLE_INTERRUPTS()        st( EA = 0; )
-#define HAL_INTERRUPTS_ARE_ENABLED()    (EA)
+#define HAL_ENABLE_INTERRUPTS()         //st( EA = 1; )
+#define HAL_DISABLE_INTERRUPTS()        //st( EA = 0; )
+#define HAL_INTERRUPTS_ARE_ENABLED()    //(EA)
 
 typedef unsigned char halIntState_t;
-#define HAL_ENTER_CRITICAL_SECTION(x)   st( x = EA;  HAL_DISABLE_INTERRUPTS(); )
-#define HAL_EXIT_CRITICAL_SECTION(x)    st( EA = x; )
-#define HAL_CRITICAL_STATEMENT(x)       st( halIntState_t _s; HAL_ENTER_CRITICAL_SECTION(_s); x; HAL_EXIT_CRITICAL_SECTION(_s); )
+#define HAL_ENTER_CRITICAL_SECTION(x)   //st( x = EA;  HAL_DISABLE_INTERRUPTS(); )
+#define HAL_EXIT_CRITICAL_SECTION(x)    //st( EA = x; )
+#define HAL_CRITICAL_STATEMENT(x)       //st( halIntState_t _s; HAL_ENTER_CRITICAL_SECTION(_s); x; HAL_EXIT_CRITICAL_SECTION(_s); )
 
 #ifdef __IAR_SYSTEMS_ICC__
   /* IAR library uses XCH instruction with EA. It may cause the higher priority interrupt to be

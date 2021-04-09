@@ -132,7 +132,9 @@ void osalTimeUpdate( void )
   uint16 elapsedMSec = 0;
 
   // Get the free-running count of 625us timer ticks
-  tmp = ll_McuPrecisionCount();
+  
+//  tmp = ll_McuPrecisionCount();
+#warning "opt"
 
   if ( tmp != previousLLTimerTick )
   {
