@@ -6,13 +6,13 @@ CC = gcc
 DOC = doc
 BUILD_DIR = build
 C_SOURCES  = \
-./Projects/ble/SimpleBLEPeripheral/Source/SimpleBLEPeripheral_Main.c \
-./Projects/ble/SimpleBLEPeripheral/Source/OSAL_SimpleBLEPeripheral.c \
-./Projects/ble/SimpleBLEPeripheral/Source/simpleBLEPeripheral.c \
-./Components/osal/common/OSAL.c \
-./Components/osal/common/OSAL_ClockBLE.c \
-./Components/osal/common/OSAL_Memory.c \
-./Components/osal/common/OSAL_Timers.c \
+./App/SimpleBLEPeripheral_Main.c \
+./App/OSAL_SimpleBLEPeripheral.c \
+./App/simpleBLEPeripheral.c \
+./osal/common/OSAL.c \
+./osal/common/OSAL_Memory.c \
+./osal/common/OSAL_ClockBLE.c \
+./osal/common/OSAL_Timers.c \
 
 
 TARGET = test
@@ -32,13 +32,9 @@ C_DEFS =  \
 # C includes
 C_INCLUDES =  \
 -I. \
--I./Projects/ble/SimpleBLEPeripheral/Source \
--I./Projects/ble/common/cc2540 \
--I./Components/hal/target/CC2540EB \
--I./Components/osal/include  \
--I./Components/osal/include \
+-I./App \
+-I./osal/include \
 -I./port \
-#-I./Components/hal/include \
 
 
 CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall 
