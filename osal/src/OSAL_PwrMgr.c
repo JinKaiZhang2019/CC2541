@@ -56,9 +56,6 @@
 #include "OSAL_Timers.h"
 #include "OSAL_PwrMgr.h"
 
-#ifdef USE_ICALL
-#include <ICall.h>
-#endif /* USE_ICALL */
 
 #ifdef OSAL_PORT2TIRTOS
 /* Direct port to TI-RTOS API */
@@ -87,7 +84,7 @@
 /* This global variable stores the power management attributes.
  */
 pwrmgr_attribute_t pwrmgr_attribute;
-#if defined USE_ICALL || defined OSAL_PORT2TIRTOS
+#if defined OSAL_PORT2TIRTOS
 uint8 pwrmgr_initialized = FALSE;
 #endif /* defined USE_ICALL || defined OSAL_PORT2TIRTOS */
 
@@ -122,16 +119,16 @@ uint8 pwrmgr_initialized = FALSE;
  */
 void osal_pwrmgr_init( void )
 {
-#if !defined USE_ICALL && !defined OSAL_PORT2TIRTOS
+#if !defined OSAL_PORT2TIRTOS
   pwrmgr_attribute.pwrmgr_device = PWRMGR_ALWAYS_ON; // Default to no power conservation.
 #endif /* USE_ICALL */
   pwrmgr_attribute.pwrmgr_task_state = 0;            // Cleared.  All set to conserve
-#if defined USE_ICALL || defined OSAL_PORT2TIRTOS
+#if defined OSAL_PORT2TIRTOS
   pwrmgr_initialized = TRUE;
 #endif /* defined USE_ICALL || defined OSAL_PORT2TIRTOS */
 }
 
-#if !defined USE_ICALL && !defined OSAL_PORT2TIRTOS
+#if !defined OSAL_PORT2TIRTOS
 /*********************************************************************
  * @fn      osal_pwrmgr_device
  *
@@ -169,7 +166,7 @@ uint8 osal_pwrmgr_task_state( uint8 task_id, uint8 state )
   if ( task_id >= tasksCnt )
     return ( INVALID_TASK );
 
-#if defined USE_ICALL || defined OSAL_PORT2TIRTOS
+#if  defined OSAL_PORT2TIRTOS
   if ( !pwrmgr_initialized )
   {
     /* If voting is made before this module is initialized,
@@ -184,36 +181,26 @@ uint8 osal_pwrmgr_task_state( uint8 task_id, uint8 state )
 
   if ( state == PWRMGR_CONSERVE )
   {
-#if defined USE_ICALL || defined OSAL_PORT2TIRTOS
+#if  defined OSAL_PORT2TIRTOS
     uint16 cache = pwrmgr_attribute.pwrmgr_task_state;
 #endif /* defined USE_ICALL || defined OSAL_PORT2TIRTOS */
     // Clear the task state flag
     pwrmgr_attribute.pwrmgr_task_state &= ~(1 << task_id );
-#if defined USE_ICALL || defined OSAL_PORT2TIRTOS
+#if defined OSAL_PORT2TIRTOS
     if (cache != 0 && pwrmgr_attribute.pwrmgr_task_state == 0)
     {
-#ifdef USE_ICALL
-      /* Decrement activity counter */
-      ICall_pwrUpdActivityCounter(FALSE);
-#else /* USE_ICALL */
       Power_releaseConstraint(Power_SD_DISALLOW);
       Power_releaseConstraint(Power_SB_DISALLOW);
-#endif /* USE_ICALL */
     }
 #endif /* defined USE_ICALL || defined OSAL_PORT2TIRTOS */
   }
   else
   {
-#if defined USE_ICALL || defined OSAL_PORT2TIRTOS
+#if  defined OSAL_PORT2TIRTOS
     if (pwrmgr_attribute.pwrmgr_task_state == 0)
     {
-#ifdef USE_ICALL
-      /* Increment activity counter */
-      ICall_pwrUpdActivityCounter(TRUE);
-#else /* USE_ICALL */
       Power_setConstraint(Power_SD_DISALLOW);
       Power_setConstraint(Power_SB_DISALLOW);
-#endif /* USE_ICALL */
     }
 #endif /* defined USE_ICALL || defined OSAL_PORT2TIRTOS */
     // Set the task state flag
@@ -225,7 +212,7 @@ uint8 osal_pwrmgr_task_state( uint8 task_id, uint8 state )
   return ( SUCCESS );
 }
 
-#if defined( POWER_SAVING ) && !(defined USE_ICALL || defined OSAL_PORT2TIRTOS)
+#if defined( POWER_SAVING ) && !(defined OSAL_PORT2TIRTOS)
 /*********************************************************************
  * @fn      osal_pwrmgr_powerconserve
  *

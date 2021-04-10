@@ -81,7 +81,6 @@
 int main(void)
 {
 
-    Tick_Init();
     /* Initialize the operating system */
     osal_init_system();
 

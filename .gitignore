@@ -6,3 +6,4 @@ tags
 file.txt
 cscope.*
 build
+compile_commands.json

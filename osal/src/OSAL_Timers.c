@@ -550,7 +550,7 @@ void osal_adjust_timers( void )
   if ( timerHead != NULL )
   {
     // Compute elapsed time (msec)
-    eTime = TimerElapsed() / TICK_COUNT;
+    eTime = TimerElapsed(); // TICK_COUNT;
 
     if ( eTime )
     {
@@ -560,7 +560,7 @@ void osal_adjust_timers( void )
 }
 #endif /* POWER_SAVING */
 
-#if defined POWER_SAVING || defined USE_ICALL
+#if defined POWER_SAVING 
 /*********************************************************************
  * @fn      osal_next_timeout
  *
