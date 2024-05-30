@@ -1,15 +1,15 @@
 /******************************************************************************
 
- @file  OSAL_SimpleBLEPeripheral.c
+ @file  hal_led.h
 
- @brief This file contains function that allows user setup tasks
+ @brief This file contains the interface to the LED Service.
 
  Group: WCS, BTS
  Target Device: CC2540, CC2541
 
  ******************************************************************************
-
- Copyright (c) 2010-2016, Texas Instruments Incorporated
+ 
+ Copyright (c) 2005-2016, Texas Instruments Incorporated
  All rights reserved.
 
  IMPORTANT: Your use of this Software is limited to those specific rights
@@ -42,60 +42,93 @@
 
  ******************************************************************************
  Release Name: ble_sdk_1.4.2.2
- Release Date: 2016-06-09 06:57:10
+ Release Date: 2016-06-09 06:57:09
  *****************************************************************************/
 
-/**************************************************************************************************
- *                                            INCLUDES
- **************************************************************************************************/
-//#include "hal_types.h"
-#include "port.h"
-#include "OSAL.h"
-#include "OSAL_Tasks.h"
+#ifndef HAL_LED_H
+#define HAL_LED_H
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
-/* Application */
-#include "app.h"
-#include "hal_drivers.h"
+/*********************************************************************
+ * INCLUDES
+ */
+
+/*********************************************************************
+ * MACROS
+ */
+
+/*********************************************************************
+ * CONSTANTS
+ */
+
+/* LEDS - The LED number is the same as the bit position */
+#define HAL_LED_1     0x01
+#define HAL_LED_2     0x02
+#define HAL_LED_3     0x04
+#define HAL_LED_4     0x08
+#define HAL_LED_ALL   (HAL_LED_1) //(HAL_LED_1 | HAL_LED_2 | HAL_LED_3 | HAL_LED_4)
+
+/* Modes */
+#define HAL_LED_MODE_OFF     0x00
+#define HAL_LED_MODE_ON      0x01
+#define HAL_LED_MODE_BLINK   0x02
+#define HAL_LED_MODE_FLASH   0x04
+#define HAL_LED_MODE_TOGGLE  0x08
+
+/* Defaults */
+#define HAL_LED_DEFAULT_MAX_LEDS      1
+#define HAL_LED_DEFAULT_DUTY_CYCLE    5
+#define HAL_LED_DEFAULT_FLASH_COUNT   50
+#define HAL_LED_DEFAULT_FLASH_TIME    1000
+
+/*********************************************************************
+ * TYPEDEFS
+ */
+
 
 /*********************************************************************
  * GLOBAL VARIABLES
  */
 
-// The order in this table must be identical to the task initialization calls below in osalInitTask.
-const pTaskEventHandlerFn tasksArr[] =
-{
-    Hal_ProcessEvent,                                  // task 0
-    App_ProcessEvent,                                  // task 1
-};
-
-const uint8 tasksCnt = sizeof( tasksArr ) / sizeof( tasksArr[0] );
-uint16 *tasksEvents;
-
-/*********************************************************************
- * FUNCTIONS
- *********************************************************************/
-
-/*********************************************************************
- * @fn      osalInitTasks
- *
- * @brief   This function invokes the initialization function for each task.
- *
- * @param   void
- *
- * @return  none
+/*
+ * Initialize LED Service.
  */
-void osalInitTasks( void )
-{
-    uint8 taskID = 0;
+extern void HalLedInit( void );
 
-    tasksEvents = (uint16 *)osal_mem_alloc( sizeof( uint16 ) * tasksCnt);
-    osal_memset( tasksEvents, 0, (sizeof( uint16 ) * tasksCnt));
+/*
+ * Set the LED ON/OFF/TOGGLE.
+ */
+extern uint8 HalLedSet( uint8 led, uint8 mode );
 
-    Hal_Init( taskID++ );
-    /* Application */
-    App_Init( taskID );
-}
+/*
+ * Blink the LED.
+ */
+extern void HalLedBlink( uint8 leds, uint8 cnt, uint8 duty, uint16 time );
+
+/*
+ * Put LEDs in sleep state - store current values
+ */
+extern void HalLedEnterSleep( void );
+
+/*
+ * Retore LEDs from sleep state
+ */
+extern void HalLedExitSleep( void );
+
+/*
+ * Return LED state
+ */
+extern uint8 HalLedGetState ( void );
 
 /*********************************************************************
 *********************************************************************/
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

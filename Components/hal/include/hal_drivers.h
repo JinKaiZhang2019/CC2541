@@ -1,15 +1,15 @@
 /******************************************************************************
 
- @file  OSAL_SimpleBLEPeripheral.c
+ @file  hal_drivers.h
 
- @brief This file contains function that allows user setup tasks
+ @brief This file contains the interface to the Drivers service.
 
  Group: WCS, BTS
  Target Device: CC2540, CC2541
 
  ******************************************************************************
-
- Copyright (c) 2010-2016, Texas Instruments Incorporated
+ 
+ Copyright (c) 2005-2016, Texas Instruments Incorporated
  All rights reserved.
 
  IMPORTANT: Your use of this Software is limited to those specific rights
@@ -42,60 +42,72 @@
 
  ******************************************************************************
  Release Name: ble_sdk_1.4.2.2
- Release Date: 2016-06-09 06:57:10
+ Release Date: 2016-06-09 06:57:09
  *****************************************************************************/
+#ifndef HAL_DRIVER_H
+#define HAL_DRIVER_H
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 /**************************************************************************************************
- *                                            INCLUDES
+ * INCLUDES
  **************************************************************************************************/
-//#include "hal_types.h"
+
 #include "port.h"
-#include "OSAL.h"
-#include "OSAL_Tasks.h"
 
+/**************************************************************************************************
+ * CONSTANTS
+ **************************************************************************************************/
 
-/* Application */
-#include "app.h"
-#include "hal_drivers.h"
+#define HAL_BUZZER_EVENT                    0x0080
+#define PERIOD_RSSI_RESET_EVT               0x0040
+#define HAL_LED_BLINK_EVENT                 0x0020
+#define HAL_KEY_EVENT                       0x0010
 
-/*********************************************************************
+#if defined POWER_SAVING
+#define HAL_SLEEP_TIMER_EVENT               0x0004
+#define HAL_PWRMGR_HOLD_EVENT               0x0002
+#define HAL_PWRMGR_CONSERVE_EVENT           0x0001
+#endif
+
+#define HAL_PWRMGR_CONSERVE_DELAY           10
+#define PERIOD_RSSI_RESET_TIMEOUT           10
+
+/**************************************************************************************************
  * GLOBAL VARIABLES
+ **************************************************************************************************/
+
+extern uint8 Hal_TaskID;
+
+/**************************************************************************************************
+ * FUNCTIONS - API
+ **************************************************************************************************/
+
+extern void Hal_Init ( uint8 task_id );
+
+/*
+ * Process Serial Buffer
  */
+extern uint16 Hal_ProcessEvent ( uint8 task_id, uint16 events );
 
-// The order in this table must be identical to the task initialization calls below in osalInitTask.
-const pTaskEventHandlerFn tasksArr[] =
-{
-    Hal_ProcessEvent,                                  // task 0
-    App_ProcessEvent,                                  // task 1
-};
-
-const uint8 tasksCnt = sizeof( tasksArr ) / sizeof( tasksArr[0] );
-uint16 *tasksEvents;
-
-/*********************************************************************
- * FUNCTIONS
- *********************************************************************/
-
-/*********************************************************************
- * @fn      osalInitTasks
- *
- * @brief   This function invokes the initialization function for each task.
- *
- * @param   void
- *
- * @return  none
+/*
+ * Process Polls
  */
-void osalInitTasks( void )
-{
-    uint8 taskID = 0;
+extern void Hal_ProcessPoll (void);
 
-    tasksEvents = (uint16 *)osal_mem_alloc( sizeof( uint16 ) * tasksCnt);
-    osal_memset( tasksEvents, 0, (sizeof( uint16 ) * tasksCnt));
+/*
+ * Initialize HW
+ */
+extern void HalDriverInit (void);
 
-    Hal_Init( taskID++ );
-    /* Application */
-    App_Init( taskID );
+#ifdef __cplusplus
 }
+#endif
 
-/*********************************************************************
-*********************************************************************/
+#endif
+
+/**************************************************************************************************
+**************************************************************************************************/

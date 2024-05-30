@@ -52,6 +52,7 @@
 
 #include "OSAL.h"
 #include "OSAL_PwrMgr.h"
+#include "hal_led.h"
 
 #include "app.h"
 #include <stdio.h>
@@ -166,7 +167,9 @@ uint16 App_ProcessEvent( uint8 task_id, uint16 events )
 	if ( events & SBP_START_DEVICE_EVT )
 	{
         printf("hello\n");
-        osal_start_timerEx(App_TaskID,SBP_START_DEVICE_EVT,1000);
+        
+        HalLedBlink(1, 3, 50, 2000);
+        osal_start_timerEx(App_TaskID,SBP_START_DEVICE_EVT,10000);
 		return ( events ^ SBP_START_DEVICE_EVT );
 	}
 

@@ -14,6 +14,8 @@ C_SOURCES  = \
 ./osal/src/OSAL_ClockBLE.c \
 ./osal/src/OSAL_Timers.c \
 ./osal/port/tick.c \
+./Components/hal/target/CC2540EB/hal_led.c \
+./Components/hal/common/hal_drivers.c \
 
 
 TARGET = test
@@ -29,6 +31,8 @@ OPT = -O2
 # C defines
 C_DEFS =  \
 -D_POSIX_C_SOURCE=199309L \
+-DHAL_LED=TRUE \
+-DBLINK_LEDS \
 
 # C includes
 C_INCLUDES =  \
@@ -36,6 +40,7 @@ C_INCLUDES =  \
 -I./App \
 -I./osal/inc \
 -I./osal/port \
+-I./Components/hal/include \
 
 
 CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall 
